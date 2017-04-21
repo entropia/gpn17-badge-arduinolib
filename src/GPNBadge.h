@@ -3,7 +3,6 @@
 #include <TFT_ILI9163C.h>
 #include <Wire.h>
 #include <SPI.h>
-#include <FS.h>
 
 #if (VERSION == 2)
 #define GPIO_LCD_DC 0
@@ -53,10 +52,7 @@ TFT_ILI9163C tft = TFT_ILI9163C(GPIO_LCD_CS, GPIO_LCD_DC);
 class Badge {
 public:
 	void init() { //initialize the badge
-		SPIFFS.begin();
   		// Next 2 line seem to be needed to connect to wifi after Wake up
-  		WiFi.disconnect();
-  		WiFi.mode(WIFI_OFF);
   		delay(20);
 	 	Wire.begin(9, 10);
 
