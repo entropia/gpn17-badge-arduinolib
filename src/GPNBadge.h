@@ -52,7 +52,9 @@ TFT_ILI9163C tft = TFT_ILI9163C(GPIO_LCD_CS, GPIO_LCD_DC);
 class Badge {
 public:
 	void init() { //initialize the badge
-  		// Next 2 line seem to be needed to connect to wifi after Wake up
+  		WiFi.diconnect();
+		WiFi.mode(WIFI_OFF);
+		// Next 2 line seem to be needed to connect to wifi after Wake up
   		delay(20);
 	 	Wire.begin(9, 10);
 
