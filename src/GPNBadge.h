@@ -1,8 +1,12 @@
+#include <ESP8266WiFi.h>
 #include <IRremoteESP8266.h>
 #include <Adafruit_NeoPixel.h>
 #include <TFT_ILI9163C.h>
 #include <Wire.h>
 #include <SPI.h>
+
+#define CENTER -21
+#define NOTHING -1
 
 #if (VERSION == 2)
 #define GPIO_LCD_DC 0
@@ -127,6 +131,31 @@ public:
     			avg += analogRead(A0);
   		}
   		return (avg / 10);
+	}
+
+	int getJoystickState() {
+		this->setAnalogMUX(MUX_JOY);
+ 	 	delay(10);
+  		uint16_t adc = analogRead(A0);
+
+  		if (adc < UP + OFFSET && adc > UP - OFFSET) {
+			return UP;
+		}
+  		else if (adc < DOWN + OFFSET && adc > DOWN - OFFSET) {
+			return DOWN;
+  		}
+  		else if (adc < RIGHT + OFFSET && adc > RIGHT - OFFSET) {
+			return RIGHT;
+  		}
+  		else if (adc < LEFT + OFFSET && adc > LEFT - OFFSET) {
+			return LEFT;
+  		}
+  		else if (digitalRead(GPIO_BOOT) == HIGH) {
+			return CENTER;
+  		}
+		else {
+			return NOTHING;
+		}
 	}
 
 private:
