@@ -1,3 +1,5 @@
+#pragma once
+
 #include <ESP8266WiFi.h>
 #include <IRremoteESP8266.h>
 #include <Adafruit_NeoPixel.h>
