@@ -8,7 +8,6 @@
 #define CENTER -21
 #define NOTHING -1
 
-#if (VERSION == 2)
 #define GPIO_LCD_DC 0
 #define GPIO_TX     1
 #define GPIO_WS2813 4
@@ -48,7 +47,6 @@
 
 IRsend irsend(GPIO_DP); //an IR led is connected to GPIO pin 4 (D2)
 IRrecv irrecv(GPIO_DN);
-#endif
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUM_LEDS, GPIO_WS2813, NEO_GRB + NEO_KHZ800);
 TFT_ILI9163C tft = TFT_ILI9163C(GPIO_LCD_CS, GPIO_LCD_DC);
