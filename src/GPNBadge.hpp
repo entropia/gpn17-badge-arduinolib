@@ -7,8 +7,6 @@
 #include <Wire.h>
 #include <SPI.h>
 
-#define CENTER -21
-#define NOTHING -1
 
 #define GPIO_LCD_DC 0
 #define GPIO_TX     1
@@ -47,11 +45,20 @@
 
 #define BAT_CRITICAL 3300
 
-IRsend irsend(GPIO_DP); //an IR led is connected to GPIO pin 4 (D2)
-IRrecv irrecv(GPIO_DN);
+extern IRsend irsend;
+extern IRrecv irrecv;
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUM_LEDS, GPIO_WS2813, NEO_GRB + NEO_KHZ800);
-TFT_ILI9163C tft = TFT_ILI9163C(GPIO_LCD_CS, GPIO_LCD_DC);
+extern Adafruit_NeoPixel pixels;
+extern TFT_ILI9163C tft;
+
+enum class JoystickState {
+	BTN_NOTHING,
+	BTN_ENTER,
+	BTN_LEFT,
+	BTN_RIGHT,
+	BTN_UP,
+	BTN_DOWN
+};
 
 class Badge {
 public:
@@ -133,28 +140,28 @@ public:
   		return (avg / 10);
 	}
 
-	int getJoystickState() {
+	JoystickState getJoystickState() {
 		this->setAnalogMUX(MUX_JOY);
  	 	delay(10);
   		uint16_t adc = analogRead(A0);
 
   		if (adc < UP + OFFSET && adc > UP - OFFSET) {
-			return UP;
+			return JoystickState::BTN_UP;
 		}
   		else if (adc < DOWN + OFFSET && adc > DOWN - OFFSET) {
-			return DOWN;
+			return JoystickState::BTN_DOWN;
   		}
   		else if (adc < RIGHT + OFFSET && adc > RIGHT - OFFSET) {
-			return RIGHT;
+			return JoystickState::BTN_RIGHT;
   		}
   		else if (adc < LEFT + OFFSET && adc > LEFT - OFFSET) {
-			return LEFT;
+			return JoystickState::BTN_LEFT;
   		}
   		else if (digitalRead(GPIO_BOOT) == HIGH) {
-			return CENTER;
+			return JoystickState::BTN_ENTER;
   		}
 		else {
-			return NOTHING;
+			return JoystickState::BTN_NOTHING;
 		}
 	}
 
