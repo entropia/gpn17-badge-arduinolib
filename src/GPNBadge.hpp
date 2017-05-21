@@ -44,6 +44,7 @@
 #define NUM_LEDS    4
 
 #define BAT_CRITICAL 3300
+#define BAT_FULL 4200
 
 extern IRsend irsend;
 extern IRrecv irrecv;
@@ -133,6 +134,7 @@ public:
 
 	uint16_t getLDRLvl() {
   		setAnalogMUX(MUX_LDR);
+        delay(20);
   		uint16_t avg = 0;
   		for (byte i = 0; i < 10; i++) {
     			avg += analogRead(A0);
