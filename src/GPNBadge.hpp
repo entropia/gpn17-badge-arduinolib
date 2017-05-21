@@ -45,6 +45,7 @@
 
 #define BAT_CRITICAL 3300
 #define BAT_FULL 4200
+#define BAT_PLATEAU 3600
 
 extern IRsend irsend;
 extern IRrecv irrecv;
@@ -117,10 +118,8 @@ public:
 		setGPIO(VIBRATOR, on?HIGH:LOW);
 	}
 	uint16_t getBatLvl() {
-		if (shiftConfig != 33) {
-    			setAnalogMUX(MUX_BAT);
-    			delay(20);
-  		}
+ 		setAnalogMUX(MUX_BAT);
+		delay(20);
   		uint16_t avg = 0;
   		for (byte i = 0; i < 10; i++) {
     			avg += analogRead(A0);
