@@ -69,6 +69,7 @@ public:
 		WiFi.mode(WIFI_OFF);
 		// Next 2 line seem to be needed to connect to wifi after Wake up
   		delay(20);
+        WiFi.persistent(false);
 	 	Wire.begin(9, 10);
 
   		pinMode(GPIO_BOOT, INPUT_PULLDOWN_16);
