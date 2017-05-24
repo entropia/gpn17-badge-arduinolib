@@ -65,82 +65,106 @@ enum class JoystickState {
 class Badge {
 public:
 	void init() { //initialize the badge
-  		WiFi.disconnect();
+  	WiFi.disconnect();
 		WiFi.mode(WIFI_OFF);
 		// Next 2 line seem to be needed to connect to wifi after Wake up
-  		delay(20);
-        WiFi.persistent(false);
+  	delay(20);
+    WiFi.persistent(false);
 	 	Wire.begin(9, 10);
 
-  		pinMode(GPIO_BOOT, INPUT_PULLDOWN_16);
-  		pinMode(GPIO_WS2813, OUTPUT);
+  	pinMode(GPIO_BOOT, INPUT_PULLDOWN_16);
+  	pinMode(GPIO_WS2813, OUTPUT);
 
-  		//the ESP is very power-sensitive during startup, so...
-  		Wire.beginTransmission(I2C_PCA);
-  		Wire.write(0b00000000); //...clear the I2C extender to switch off vobrator and LCD backlight
-  		Wire.endTransmission();
+  	//the ESP is very power-sensitive during startup, so...
+ 		Wire.beginTransmission(I2C_PCA);
+ 		Wire.write(0b00000000); //...clear the I2C extender to switch off vobrator and LCD backlight
+ 		Wire.endTransmission();
 
 
  		pixels.begin(); //initialize the WS2813
-  		pixels.clear();
-  		pixels.show();
+  	pixels.clear();
+  	pixels.show();
 
-  		irsend.begin();
-  		irrecv.enableIRIn();
-  		Serial.begin(115200);
+  	irsend.begin();
+  	irrecv.enableIRIn();
+ 		Serial.begin(115200);
 
-  		delay(100);
+ 		delay(100);
 
-  		tft.begin(); //initialize the tft. This also sets up SPI to 80MHz Mode 0
-  		tft.setRotation(2);
-  		tft.scroll(32);
+ 		tft.begin(); //initialize the tft. This also sets up SPI to 80MHz Mode 0
+ 		tft.setRotation(2);
+ 		tft.scroll(32);
 
  		pixels.clear(); //clear the WS2813 another time, in case they catched up some noise
  		pixels.show();
 	}
 
 	void setGPIO(byte channel, boolean level) {
-  		bitWrite(shiftConfig, channel, level);
-  		Wire.beginTransmission(I2C_PCA);
-  		Wire.write(shiftConfig);
-  		Wire.endTransmission();
+    bitWrite(shiftConfig, channel, level);
+  	Wire.beginTransmission(I2C_PCA);
+  	Wire.write(shiftConfig);
+  	Wire.endTransmission();
 	}
+
 	void setAnalogMUX(byte channel) {
-  		shiftConfig = shiftConfig & 0b11111000;
-  		shiftConfig = shiftConfig | channel;
-  		Wire.beginTransmission(I2C_PCA);
-  		Wire.write(shiftConfig);
-  		Wire.endTransmission();
+  	shiftConfig = shiftConfig & 0b11111000;
+  	shiftConfig = shiftConfig | channel;
+  	Wire.beginTransmission(I2C_PCA);
+  	Wire.write(shiftConfig);
+  	Wire.endTransmission();
 	}
+
 	void setBacklight(bool on) {
 		setGPIO(LCD_LED, on?HIGH:LOW);
 	}
+
 	void setVibrator(bool on) {
 		setGPIO(VIBRATOR, on?HIGH:LOW);
 	}
-	uint16_t getBatLvl() {
- 		setAnalogMUX(MUX_BAT);
-		delay(20);
-  		uint16_t avg = 0;
-  		for (byte i = 0; i < 10; i++) {
-    			avg += analogRead(A0);
-  		}
-		return (avg / 10);
+
+	float getBatLvl() {
+    setAnalogMUX(MUX_BAT);
+    delay(5);
+
+  	float avg = 0;
+  	for (byte i = 0; i < 63; i++) avg += analogRead(A0);
+
+		return (avg / 64);
 	}
 
-	uint16_t getBatVoltage() { //battery voltage in mV
-  		return (getBatLvl() * 4.8);
+	float getBatVoltage() { //battery voltage in mV
+  	return (getBatLvl() * 4.8);
 	}
 
-	uint16_t getLDRLvl() {
-  		setAnalogMUX(MUX_LDR);
-        delay(20);
-  		uint16_t avg = 0;
-  		for (byte i = 0; i < 10; i++) {
-    			avg += analogRead(A0);
-  		}
-  		return (avg / 10);
+	float getLDRLvl() {
+    setAnalogMUX(MUX_LDR);
+    delay(5);
+  
+		float avg = 0;
+		for (byte i = 0; i < 63; i++) avg += analogRead(A0);
+
+		return (avg / 64.0);
 	}
+
+  float getLDRVoltage() {
+    float ldr = getLDRLvl();
+
+    float ldrVolt = (-9.4300168971096241 * pow(ldr, 0)
+                    + 1.0877899879077804 * pow(ldr, 1)
+                    + -0.00019748711244579100 * pow(ldr, 2)
+                    + 0.00000013832688622212447 * pow(ldr, 3)) / 1000 + 0.002;
+    return ldrVolt;
+  }
+
+  float getALKLvl() {
+    setAnalogMUX(MUX_ALK);
+    delay(5);
+
+    float avg = 0;
+    for (byte i = 0; i < 63; i++) avg += analogRead(A0);
+
+    return (avg / 64);
+  }
 
 	JoystickState getJoystickState() {
 		this->setAnalogMUX(MUX_JOY);
