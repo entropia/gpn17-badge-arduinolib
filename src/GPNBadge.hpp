@@ -33,10 +33,10 @@
 #define IR_EN    6
 #define OUT1     7
 
-#define UP      730
-#define DOWN    590
-#define RIGHT   496
-#define LEFT    970
+#define UP      790
+#define DOWN    630
+#define RIGHT   530
+#define LEFT    1024
 #define OFFSET  30
 
 #define I2C_PCA 0x25
