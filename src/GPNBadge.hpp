@@ -133,7 +133,7 @@ public:
 	}
 
 	float getBatVoltage() { //battery voltage in mV
-  	return (getBatLvl() * 4.8);
+  	return (getBatLvl() * 4.512);
 	}
 
 	float getLDRLvl() {
@@ -149,10 +149,10 @@ public:
   float getLDRVoltage() {
     float ldr = getLDRLvl();
 
-    float ldrVolt = (-9.4300168971096241 * pow(ldr, 0)
+    float ldrVolt = ((-9.4300168971096241 * pow(ldr, 0)
                     + 1.0877899879077804 * pow(ldr, 1)
                     + -0.00019748711244579100 * pow(ldr, 2)
-                    + 0.00000013832688622212447 * pow(ldr, 3)) / 1000 + 0.002;
+                    + 0.00000013832688622212447 * pow(ldr, 3)) / 1000 + 0.002)*0.94;
     return ldrVolt;
   }
 
