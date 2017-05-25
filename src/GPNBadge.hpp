@@ -166,6 +166,12 @@ public:
     return (avg / 64);
   }
 
+  float getALKVoltage() {
+    float alk = getALKLvl();
+
+    return (alk * 3.6846);
+  }
+
 	JoystickState getJoystickState() {
 		this->setAnalogMUX(MUX_JOY);
  	 	delay(10);
